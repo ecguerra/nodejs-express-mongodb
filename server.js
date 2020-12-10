@@ -17,10 +17,28 @@ app.use(bodyParser.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// MongoDB & Mongoose setup
+const db = require('./server/models')
+db.mongoose
+  .connect(db.url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }).then(()=>{
+    console.log('connected to the database')
+  }).catch(err => {
+    console.log('cannot connect to the database', err)
+    // exit out so we don't see all the errors // make the log easier to read
+    process.exit()
+  })
+
+
 // simple route
-app.get("/", (req, res) => {
+app.get('/', (req, res) => {
   res.json({ message: "Welcome to our node application." });
 });
+
+// require all the routes
+require('./server/routes/tutorial.routes')(app)
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
